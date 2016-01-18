@@ -20,7 +20,7 @@ const (
 
 // Board exported
 type TheirBoard [][]int
-type OurBoard [][]int
+type OurBoard [][]*Ship
 
 var b1 Board // Our Board
 var b2 Board // Opponents Board
