@@ -12,8 +12,15 @@ import (
 // S = ship
 // X = hit ship
 
+const (
+	Nothing = 0
+	Hit = 1
+	Miss = 2
+)
+
 // Board exported
-type Board [][]int
+type TheirBoard [][]int
+type OurBoard [][]int
 
 var b1 Board // Our Board
 var b2 Board // Opponents Board
