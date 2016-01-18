@@ -8,6 +8,9 @@ import (
 	"net/http"
 	"log"
 	"bytes"
+	"os"
+	"time"
+	"github.com/nsf/termbox-go"
 )
 
 type Shot struct {
@@ -16,15 +19,17 @@ type Shot struct {
 }
 
 var ourTurn = flag.Bool("starts", false, "Choose to start the game and you win the coin toss")
+var ourBoard OurBoard
+var theirBoard TheirBoard
 
 const (
 	AircraftCarrier = 0
-	BattleShip      = 1
-	Cruiser         = 2
-	Destroyer1      = 3
-	Destroyer2      = 4
-	Submarine1      = 5
-	Submarine2      = 6
+	BattleShip = 1
+	Cruiser = 2
+	Destroyer1 = 3
+	Destroyer2 = 4
+	Submarine1 = 5
+	Submarine2 = 6
 )
 
 type Response struct {
@@ -55,9 +60,14 @@ func PewPew(w http.ResponseWriter, r *http.Request) {
 		var shot Shot
 		body, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(body, &shot)
-		if (b2[shot.X][shot.Y] == Nothing) {
+		if (theirBoard[shot.X][shot.Y] == Nothing) {
 			j, _ := json.Marshal(shot)
 			res, err := http.Post("localhost:8001/", "application/json", bytes.NewBuffer(j))
+			var response Response
+			json.Unmarshal(ioutil.ReadAll(res.Body), &response)
+			if response.Hit {
+
+			}
 		}
 		response := Response{
 			Hit:      true,
@@ -68,8 +78,31 @@ func PewPew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func newBoard() (tb TheirBoard) {
+	tb = make(TheirBoard, 10)
+	for i := 0; i < 10; i++ {
+		tb[i] = make([]int, 10)
+	}
+
+	return
+}
+
 func main() {
 	flag.Parse()
+
+	termbox.Init()
+	defer termbox.Close()
+
+	// Create a fake board
+	ourBoard := newBoard()
+	theirBoard := newBoard()
+
+	Display(ourBoard, theirBoard, os.Stdout)
+
 	http.HandleFunc("/", TakingFire)
-	http.ListenAndServe(":8000", nil)
+	go http.ListenAndServe(":8000", nil)
+
+	for {
+		time.Sleep(1000)
+	}
 }
