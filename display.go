@@ -12,8 +12,15 @@ import (
 // S = ship
 // X = hit ship
 
+const (
+	Nothing = 0
+	Hit     = 1
+	Miss    = 2
+)
+
 // Board exported
-type Board [][]int
+type TheirBoard [][]int
+type OurBoard [][]*Ship
 
 var b1 Board // Our Board
 var b2 Board // Opponents Board
@@ -57,9 +64,9 @@ func printBoard(board Board, xStart, yStart int) {
 	print_tb(xStart, y+1, "\\----------/", termbox.ColorBlack, termbox.ColorWhite)
 }
 
-func print_tb(x, y int, msg string, fg, bg termbox.Attribute) {
+func print_tb(x, y int, msg string) {
 	for _, c := range []rune(msg) {
-		termbox.SetCell(x, y, c, fg, bg)
+		termbox.SetCell(x, y, c, termbox.ColorWhite, termbox.ColorDefault)
 		x += runewidth.RuneWidth(c)
 	}
 	termbox.Flush()
