@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
+	"time"
+
+	"github.com/nsf/termbox-go"
 )
 
 type Shot struct {
@@ -35,7 +39,30 @@ func TakingFire(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, string(j))
 }
 
+func newBoard() (tb TheirBoard) {
+	tb = make(TheirBoard, 10)
+	for i := 0; i < 10; i++ {
+		tb[i] = make([]int, 10)
+	}
+
+	return
+}
+
 func main() {
+
+	termbox.Init()
+	defer termbox.Close()
+
+	// Create a fake board
+	ourBoard := newBoard()
+	theirBoard := newBoard()
+
+	Display(ourBoard, theirBoard, os.Stdout)
+
 	http.HandleFunc("/", TakingFire)
-	http.ListenAndServe(":8000", nil)
+	go http.ListenAndServe(":8000", nil)
+
+	for {
+		time.Sleep(1000)
+	}
 }
