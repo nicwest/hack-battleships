@@ -2,7 +2,7 @@ package main
 
 type Ship struct {
 	name   string
-	length string
+	length int
 	hits   int
 }
 

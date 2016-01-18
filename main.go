@@ -57,12 +57,21 @@ func main() {
 	ourBoard := newBoard()
 	theirBoard := newBoard()
 
-	Display(ourBoard, theirBoard, os.Stdout)
+	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
 
 	http.HandleFunc("/", TakingFire)
 	go http.ListenAndServe(":8000", nil)
 
 	for {
+		Display(ourBoard, theirBoard, os.Stdout)
+
+		switch ev := termbox.PollEvent(); ev.Type {
+		case termbox.EventKey:
+			if ev.Key == termbox.KeySpace {
+				os.Exit(0)
+			}
+		}
+
 		time.Sleep(1000)
 	}
 }
