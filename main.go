@@ -1,15 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"flag"
 	"io"
 	"io/ioutil"
-	"flag"
-	"net/http"
 	"log"
-	"bytes"
+	"net/http"
 	"os"
 	"time"
+
 	"github.com/nsf/termbox-go"
 )
 
@@ -28,12 +29,12 @@ var theirBoard TheirBoard
 
 const (
 	AircraftCarrier = 0
-	BattleShip = 1
-	Cruiser = 2
-	Destroyer1 = 3
-	Destroyer2 = 4
-	Submarine1 = 5
-	Submarine2 = 6
+	BattleShip      = 1
+	Cruiser         = 2
+	Destroyer1      = 3
+	Destroyer2      = 4
+	Submarine1      = 5
+	Submarine2      = 6
 )
 
 type Response struct {
@@ -43,7 +44,7 @@ type Response struct {
 
 func TakingFire(w http.ResponseWriter, r *http.Request) {
 	log.Print(*ourTurn)
-	if (*ourTurn) {
+	if *ourTurn {
 		w.WriteHeader(http.StatusBadRequest)
 		io.WriteString(w, "Please wait your turn!")
 	} else {
@@ -57,14 +58,14 @@ func TakingFire(w http.ResponseWriter, r *http.Request) {
 }
 
 func PewPew(w http.ResponseWriter, r *http.Request) {
-	if (!*ourTurn) {
+	if !*ourTurn {
 		w.WriteHeader(http.StatusBadRequest)
 		io.WriteString(w, "Please wait your turn!")
 	} else {
 		var shot Shot
 		body, _ := ioutil.ReadAll(r.Body)
 		json.Unmarshal(body, &shot)
-		if (theirBoard[shot.X][shot.Y] == Nothing) {
+		if theirBoard[shot.X][shot.Y] == Nothing {
 			j, _ := json.Marshal(shot)
 			res, err := http.Post("localhost:8001/", "application/json", bytes.NewBuffer(j))
 			var response Response
