@@ -21,11 +21,10 @@ const (
 
 // Board exported
 type TheirBoard [][]int
+type OurBoard [][]*Ship
 
-// type OurBoard [][]*Ship
-
-// var b1 Board // Our Board
-// var b2 Board // Opponents Board
+//var b1 TheirBoard // Their Board
+//var b2 Out // Opponents Board
 
 // Display the baord
 // b1 our board = b2 their board
