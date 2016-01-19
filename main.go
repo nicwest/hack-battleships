@@ -10,6 +10,10 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+type cursorPosition struct {
+	x, y int
+}
+
 type Shot struct {
 	X int `json:"x"`
 	Y int `json:"x"`
@@ -57,6 +61,9 @@ func main() {
 	ourBoard := newBoard()
 	theirBoard := newBoard()
 
+	// Initial Cursor Position
+	cursor := cursorPosition{0, 0}
+
 	termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse)
 
 	http.HandleFunc("/", TakingFire)
@@ -67,11 +74,37 @@ func main() {
 
 		switch ev := termbox.PollEvent(); ev.Type {
 		case termbox.EventKey:
-			if ev.Key == termbox.KeySpace {
+			switch ev.Key {
+			case termbox.KeyArrowRight:
+				cursor.x++
+				if cursor.x > 9 {
+					cursor.x = 9
+				}
+			case termbox.KeyArrowLeft:
+				cursor.x--
+				if cursor.x < 0 {
+					cursor.x = 0
+				}
+			case termbox.KeyArrowUp:
+				cursor.y--
+				if cursor.y < 0 {
+					cursor.y = 0
+				}
+			case termbox.KeyArrowDown:
+				cursor.y++
+				if cursor.y > 9 {
+					cursor.y = 9
+				}
+
+			}
+
+			termbox.SetCursor(cursor.x, cursor.y)
+
+			if ev.Key == termbox.KeyArrowRight {
 				os.Exit(0)
 			}
 		}
 
-		time.Sleep(1000)
+		time.Sleep(200)
 	}
 }
